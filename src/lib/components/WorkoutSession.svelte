@@ -19,6 +19,9 @@
 
     let isRepBased = false;
 
+    // Screen Wake Lock to keep screen on during workout
+    let wakeLock: any = null;
+
     $: currentActivity = workoutData.activities[currentActivityIndex];
     $: totalActivities = workoutData.activities.length;
     $: totalSets = workoutData.sets;
@@ -268,6 +271,12 @@
         clickSound.load();
         closeSound.load();
 
+        // Request wake lock to keep screen on
+        requestWakeLock();
+
+        // Re-acquire wake lock if user switches apps and comes back
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
         startIntro();
     });
 
@@ -279,8 +288,48 @@
         return audio;
     }
 
+    // Screen Wake Lock functions
+    async function requestWakeLock() {
+        try {
+            if ("wakeLock" in navigator) {
+                wakeLock = await (navigator as any).wakeLock.request("screen");
+                console.log("Wake Lock acquired");
+
+                wakeLock.addEventListener("release", () => {
+                    console.log("Wake Lock released");
+                });
+            }
+        } catch (err) {
+            console.error(`Wake Lock error: ${err}`);
+        }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            wakeLock
+                .release()
+                .then(() => {
+                    wakeLock = null;
+                })
+                .catch((err: any) => {
+                    console.error(`Wake Lock release error: ${err}`);
+                });
+        }
+    }
+
+    function handleVisibilityChange() {
+        if (document.visibilityState === "visible" && wakeLock === null) {
+            requestWakeLock();
+        }
+    }
+
     onDestroy(() => {
         clearInterval(timerInterval);
+        releaseWakeLock();
+        document.removeEventListener(
+            "visibilitychange",
+            handleVisibilityChange,
+        );
     });
 
     function playChainedVoice(
