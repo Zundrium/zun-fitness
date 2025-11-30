@@ -110,7 +110,7 @@
         transition:fade={{ duration: 150 }}
     >
         <div
-            class="modal {isSessionActive ? '' : 'mech-border'}"
+            class="modal max-w-xl {isSessionActive ? '' : 'mech-border'}"
             class:session-active={isSessionActive}
             on:click|stopPropagation
             transition:glitch={{ duration: 200 }}
