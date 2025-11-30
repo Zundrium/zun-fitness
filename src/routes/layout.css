@@ -1,0 +1,229 @@
+@import 'tailwindcss';
+
+:root {
+  /* Palette: dark grey-blue, light blue, bright orange-red */
+  --color-bg: #060812;
+  --color-surface: #0c101b;
+  --color-surface-light: #181e2a;
+  --color-text: #e3f2ff;
+  --color-primary: #00f7ffff;
+  --color-secondary: #ff4b2b;
+  --color-dim: #6582b9ff;
+  --color-border: #1e2740;
+  
+  /* Fonts: Oxanium for all non-body text */
+  --font-display: 'Oxanium', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Oxanium', monospace;
+
+  /* Keep existing glow colors for neon effects */
+  --glow-primary: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.5), 0 0 30px rgba(0, 243, 255, 0.3);
+  --glow-secondary: 0 0 10px rgba(255, 0, 153, 0.7), 0 0 20px rgba(255, 0, 153, 0.5), 0 0 30px rgba(255, 0, 153, 0.3);
+  --bloom-strong: 0 0 20px rgba(0, 243, 255, 0.8), 0 0 40px rgba(0, 243, 255, 0.6), 0 0 60px rgba(0, 243, 255, 0.4);
+}
+
+body {
+  @apply min-h-screen flex justify-center overflow-x-hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+
+@keyframes bg-scroll {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 0 40px, 0 40px; }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-left: 1px solid var(--color-border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-light);
+  border: 1px solid var(--color-primary);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+  box-shadow: var(--glow-primary);
+}
+
+/* Utility Classes for Mech Look */
+.mech-border {
+  position: relative;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  
+}
+
+
+
+.text-glow {
+  text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+}
+
+.box-glow {
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+/* Animated perspective background grid used on the main page */
+.bg-grid-main {
+  background-size: 40px 40px;
+  animation: bg-scroll 2s linear infinite;
+}
+
+/* Session control / mech buttons (global) */
+.mech-btn {
+  position: relative;
+  background: var(--color-primary);
+  color: #000;
+  font-family: var(--font-display);
+  font-weight: 700;
+  padding: 0.8rem 2.5rem;
+  clip-path: polygon(
+    15px 0,
+    100% 0,
+    100% calc(100% - 15px),
+    calc(100% - 15px) 100%,
+    0 100%,
+    0 15px
+  );
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  overflow: hidden;
+}
+
+.mech-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.mech-btn:hover {
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+  transform: scale(1.02);
+}
+
+.mech-btn:hover::before {
+  left: 100%;
+}
+
+.mech-btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-dim);
+  font-family: var(--font-mono);
+  padding: 0.6rem 2rem;
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+  transition: all 0.2s;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+}
+
+.mech-btn-secondary:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.glitch-title {
+  position: relative;
+  display: inline-block;
+  color: var(--color-primary);
+  text-shadow:
+    0 0 5px rgba(0, 243, 255, 0.7),
+    0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.glitch-title::before,
+.glitch-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+  mix-blend-mode: screen;
+}
+
+.glitch-title::before {
+  color: var(--color-secondary);
+  animation: glitch-top 4s infinite linear alternate-reverse;
+}
+
+.glitch-title::after {
+  color: var(--color-primary);
+  animation: glitch-bottom 4.5s infinite linear alternate-reverse;
+}
+
+.glitch-title {
+  animation:
+    glitch-title-twitch 7s infinite steps(1, end);
+}
+
+@keyframes glitch-top {
+  0% { transform: translate(0, 0); clip-path: inset(0 0 90% 0); }
+  20% { transform: translate(-1px, -0.5px); clip-path: inset(0 0 70% 0); }
+  40% { transform: translate(1px, 0.5px); clip-path: inset(0 0 50% 0); }
+  60% { transform: translate(-0.5px, 0); clip-path: inset(0 0 75% 0); }
+  80% { transform: translate(0.5px, -0.5px); clip-path: inset(0 0 60% 0); }
+  100% { transform: translate(0, 0); clip-path: inset(0 0 90% 0); }
+}
+
+@keyframes glitch-bottom {
+  0% { transform: translate(0, 0); clip-path: inset(85% 0 0 0); }
+  20% { transform: translate(0.5px, 0.5px); clip-path: inset(60% 0 0 0); }
+  40% { transform: translate(-0.5px, -0.5px); clip-path: inset(40% 0 0 0); }
+  60% { transform: translate(1px, 0); clip-path: inset(70% 0 0 0); }
+  80% { transform: translate(-1px, 0.5px); clip-path: inset(55% 0 0 0); }
+  100% { transform: translate(0, 0); clip-path: inset(85% 0 0 0); }
+}
+
+@keyframes glitch-title-twitch {
+  0%,
+  15%,
+  30%,
+  60%,
+  100% {
+    transform: translate(0, 0);
+  }
+  32% {
+    transform: translate(-1px, 0);
+  }
+  34% {
+    transform: translate(2px, 0);
+  }
+  36% {
+    transform: translate(-0.5px, 0);
+  }
+}

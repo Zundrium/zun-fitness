@@ -1,0 +1,46 @@
+{
+    "id": "day04",
+    "title": "Total Body - Day 4: Tendons",
+    "description": "Repeat or hold each exercise for 30 seconds, then move on to the next, Repeat the sequence again on the other side.",
+    "sets": 1,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 30,
+    "activities": [
+        {
+            "name": "Left leg side swing",
+            "duration": 30
+        },
+        {
+            "name": "Right leg side swing",
+            "duration": 30
+        },
+        {
+            "name": "Standing Straddle Stretch",
+            "duration": 30
+        },
+        {
+            "name": "Left leg behind swing",
+            "duration": 30
+        },
+        {
+            "name": "Right leg behind swing",
+            "duration": 30
+        },
+        {
+            "name": "Standing Straddle Stretch",
+            "duration": 30
+        },
+        {
+            "name": "Left leg forward swing",
+            "duration": 30
+        },
+        {
+            "name": "Right leg forward swing",
+            "duration": 30
+        },
+        {
+            "name": "Standing Straddle Stretch",
+            "duration": 30
+        }
+    ]
+}

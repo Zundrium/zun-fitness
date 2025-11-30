@@ -1,0 +1,34 @@
+{
+    "id": "day06",
+    "title": "Total Body - Day 6: Cardio HIT",
+    "description": "Let's get your heart rate up!",
+    "sets": 3,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 30,
+    "activities": [
+        {
+            "name": "High knees",
+            "duration": 30
+        },
+        {
+            "name": "Butt kicks",
+            "duration": 30
+        },
+        {
+            "name": "High knees",
+            "duration": 30
+        },
+        {
+            "name": "March steps",
+            "duration": 30
+        },
+        {
+            "name": "High knees",
+            "duration": 30
+        },
+        {
+            "name": "Split jacks",
+            "duration": 30
+        }
+    ]
+}

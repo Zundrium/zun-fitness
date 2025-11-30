@@ -1,0 +1,34 @@
+{
+    "id": "day02",
+    "title": "Total Body - Day 2: Abs & Core",
+    "description": "Abs & Core workout. Level I: 3 sets, Level II: 5 sets, Level III: 7 sets. Rest up to 2 minutes between sets.",
+    "sets": 3,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Jumping Jacks",
+            "reps": 10
+        },
+        {
+            "name": "Toe tap hops",
+            "reps": 10
+        },
+        {
+            "name": "Jumping Jacks",
+            "reps": 10
+        },
+        {
+            "name": "Hops on the spot",
+            "reps": 10
+        },
+        {
+            "name": "Jumping Jacks",
+            "reps": 10
+        },
+        {
+            "name": "Side to side hops",
+            "reps": 10
+        }
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "id": "day07",
+    "title": "Total Body - Day 7: Yoga",
+    "description": "Hold each pose for 30 seconds then move on to the next one. Repeat the sequence again on the other side.",
+    "sets": 1,
+    "restBetweenActivities": 10,
+    "restBetweenSets": 30,
+    "activities": [
+        {
+            "name": "Downward-Facing Dog",
+            "duration": 30
+        },
+        {
+            "name": "Downward Dog Reach-Back right",
+            "duration": 30
+        },
+        {
+            "name": "Downward Dog Reach-Back left",
+            "duration": 30
+        },
+        {
+            "name": "Side Plank right",
+            "duration": 30
+        },
+        {
+            "name": "Side Plank left",
+            "duration": 30
+        },
+        {
+            "name": "Three-Legged Downward Dog right",
+            "duration": 30
+        },
+        {
+            "name": "Three-Legged Downward Dog left",
+            "duration": 30
+        },
+        {
+            "name": "High Plank Hold right",
+            "duration": 30
+        },
+        {
+            "name": "Bird Dog right",
+            "duration": 30
+        },
+        {
+            "name": "Bird Dog left",
+            "duration": 30
+        }
+    ]
+}

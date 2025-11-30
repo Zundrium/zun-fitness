@@ -1,0 +1,30 @@
+{
+    "id": "day01",
+    "title": "Total Body - Day 1: Build",
+    "description": "Five-set total body routine inspired by Darebee's Total Body Day 1: reverse lunges, split lunges, side-to-side lunges, shoulder taps and plank leg raises. Perform 5 sets in total with 60 seconds rest between exercises and 30 seconds rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 60,
+    "activities": [
+        {
+            "name": "Reverse Lunges",
+            "reps": 14
+        },
+        {
+            "name": "Split Lunges",
+            "reps": 14
+        },
+        {
+            "name": "Side-to-Side Lunges",
+            "reps": 14
+        },
+        {
+            "name": "Shoulder Taps",
+            "reps": 24
+        },
+        {
+            "name": "Plank Leg Raises",
+            "reps": 24
+        }
+    ]
+}

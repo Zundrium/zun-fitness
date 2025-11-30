@@ -1,0 +1,26 @@
+{
+    "id": "day02",
+    "title": "Total Body - Day 2: Abs & Core",
+    "description": "Abs & Core workout. Level I: 3 sets, Level II: 5 sets, Level III: 7 sets. Rest up to 2 minutes between sets.",
+    "sets": 3,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Knee-in Twist",
+            "reps": 10
+        },
+        {
+            "name": "Sit ups",
+            "reps": 10
+        },
+        {
+            "name": "Reverse Crunches",
+            "reps": 10
+        },
+        {
+            "name": "Back extensions",
+            "reps": 10
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "id": "day05",
+    "title": "Total Body - Day 5: Build",
+    "description": "Build your upper body strength with this 5-set routine. Perform 5 sets in total with 60 seconds rest between exercises and 30 seconds rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 30,
+    "restBetweenSets": 60,
+    "activities": [
+        {
+            "name": "Squats",
+            "count": 14
+        },
+        {
+            "name": "Calf Raises",
+            "count": 14
+        },
+        {
+            "name": "Plank Rotations",
+            "count": 14
+        },
+        {
+            "name": "Plank arm raises",
+            "count": 14
+        },
+        {
+            "name": "Thigh taps",
+            "count": 14
+        }
+    ]
+}
