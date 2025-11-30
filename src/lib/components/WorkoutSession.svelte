@@ -393,26 +393,6 @@
         <div class="corner bottom-right"></div>
     </div>
 
-    <!-- Top Bar: Counters (Centered) -->
-    <div
-        class="absolute top-8 left-0 w-full flex justify-center items-center gap-8 z-20"
-    >
-        <div class="hud-counter">
-            <span class="label">SET</span>
-            <span class="value"
-                >{currentSet} <span class="total">/ {totalSets}</span></span
-            >
-        </div>
-        <div class="hud-separator"></div>
-        <div class="hud-counter">
-            <span class="label">ACTIVITY</span>
-            <span class="value"
-                >{currentActivityIndex + 1}
-                <span class="total">/ {totalActivities}</span></span
-            >
-        </div>
-    </div>
-
     <!-- Close Button -->
     <button
         class="absolute top-8 right-8 z-30 text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors p-2"
@@ -440,6 +420,24 @@
 
     <!-- Main Content Area -->
     <div class="relative z-20 flex flex-col items-center w-full max-w-2xl px-6">
+        <!-- Top Bar: Counters (Centered) -->
+        <div class="w-full flex justify-center items-center gap-8 mb-6">
+            <div class="hud-counter">
+                <span class="label">SET</span>
+                <span class="value"
+                    >{currentSet} <span class="total">/ {totalSets}</span></span
+                >
+            </div>
+            <div class="hud-separator"></div>
+            <div class="hud-counter">
+                <span class="label">ACTIVITY</span>
+                <span class="value"
+                    >{currentActivityIndex + 1}
+                    <span class="total">/ {totalActivities}</span></span
+                >
+            </div>
+        </div>
+
         <!-- Activity Visual -->
         <div
             class="relative w-full aspect-video bg-[#050505] border border-[var(--color-primary)] mb-8 group overflow-hidden shadow-[0_0_30px_rgba(0,243,255,0.1)]"
@@ -471,9 +469,9 @@
         </div>
 
         <!-- Status & Timer -->
-        <div class="flex flex-col items-center mb-8 w-full">
+        <div class="flex flex-col items-center mb-8 w-full gap-2">
             <h2
-                class="text-4xl font-display mb-2 tracking-widest uppercase text-glow glitch-title transition-colors duration-300 {isResting ||
+                class="text-2xl font-display mb-2 tracking-widest uppercase text-glow glitch-title transition-colors duration-300 {isResting ||
                 isIntro
                     ? 'text-[var(--color-secondary)]'
                     : 'text-[var(--color-primary)]'}"
@@ -491,30 +489,6 @@
                     {currentActivity.name}
                 {/if}
             </h2>
-
-            <div class="relative mb-6 flex flex-col items-center">
-                {#if isRepBased && !isResting && !isIntro}
-                    <div
-                        class="text-[var(--color-primary)] text-2xl font-mono tracking-widest mb-2 animate-pulse"
-                    >
-                        REPS: {currentRep} / {activityReps}
-                    </div>
-                {/if}
-
-                <div
-                    class="text-8xl font-bold text-white tracking-tighter tabular-nums timer-display"
-                    style="text-shadow: 0 0 20px rgba(255,255,255,0.5);"
-                >
-                    {formatTime(timeLeft)}
-                </div>
-                <!-- Decorative lines around timer -->
-                <div
-                    class="absolute -left-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
-                ></div>
-                <div
-                    class="absolute -right-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
-                ></div>
-            </div>
 
             <!-- Next Activity Info -->
             {#if isResting || isIntro}
@@ -542,11 +516,35 @@
                     </span>
                 </div>
             {/if}
+
+            <div class="relative flex flex-col items-center">
+                {#if isRepBased && !isResting && !isIntro}
+                    <div
+                        class="text-[var(--color-primary)] text-2xl font-mono tracking-widest mb-2 animate-pulse"
+                    >
+                        REPS: {currentRep} / {activityReps}
+                    </div>
+                {/if}
+
+                <div
+                    class="text-4xl font-bold text-white tracking-tighter tabular-nums timer-display"
+                    style="text-shadow: 0 0 20px rgba(255,255,255,0.5);"
+                >
+                    {formatTime(timeLeft)}
+                </div>
+                <!-- Decorative lines around timer -->
+                <div
+                    class="absolute -left-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
+                ></div>
+                <div
+                    class="absolute -right-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
+                ></div>
+            </div>
         </div>
 
         <!-- Progress Bar -->
         <div
-            class="w-full h-4 bg-[#111] border border-[var(--color-dim)] relative mb-10 overflow-hidden"
+            class="w-full h-6 bg-[#111] border border-[var(--color-dim)] relative mb-6 overflow-hidden"
         >
             <!-- Ticks -->
             <div class="absolute inset-0 flex justify-between px-1">
@@ -567,7 +565,7 @@
         </div>
 
         <!-- Controls -->
-        <div class="flex flex-col gap-6 z-30 w-full">
+        <div class="flex flex-col gap-3 z-30 w-full">
             {#if isResting || isIntro}
                 <SessionControlButton
                     variant="skip"

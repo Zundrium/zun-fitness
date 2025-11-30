@@ -178,7 +178,7 @@
                     {/if}
 
                     {#if isCompleted}
-                        <div class="flex gap-4 mt-4">
+                        <div class="flex gap-2 mt-4">
                             <button
                                 class="action-btn completed flex-1 flex items-center justify-center gap-2"
                                 on:click={() => {
