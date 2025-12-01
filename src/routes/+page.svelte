@@ -4,6 +4,7 @@
     import Calendar from "$lib/components/Calendar.svelte";
     import WorkoutModal from "$lib/components/WorkoutModal.svelte";
     import workoutsData from "$lib/data/workouts.json";
+    import { audioService } from "$lib/services/audio";
 
     let completedDays: string[] = [];
     let selectedWorkout: any = null;
@@ -11,8 +12,9 @@
     let isSelectedDayCompleted = false;
 
     let overlayPhase: "loading" | "split" | "done" = "loading";
-    let welcomeBackSound: HTMLAudioElement;
     let hasBoundWelcomeBackListener = false;
+
+    const WELCOME_SOUND = "/audio/voice/heart/welcome-back.mp3";
 
     onMount(() => {
         const stored = localStorage.getItem("completedDays");
@@ -20,17 +22,14 @@
             completedDays = JSON.parse(stored);
         }
 
-        welcomeBackSound = new Audio("/audio/voice/heart/welcome-back.mp3");
-        welcomeBackSound.load();
+        audioService.preload([WELCOME_SOUND]);
 
         setTimeout(() => {
             overlayPhase = "split";
             if (!hasBoundWelcomeBackListener) {
                 const tryPlayWelcomeBack = () => {
-                    if (!welcomeBackSound) return;
-                    welcomeBackSound.currentTime = 0;
-                    welcomeBackSound
-                        .play()
+                    audioService
+                        .play(WELCOME_SOUND)
                         .catch((e) =>
                             console.error(
                                 "Error playing welcome-back sound:",

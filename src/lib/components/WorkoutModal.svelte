@@ -3,6 +3,7 @@
     import { fade } from "svelte/transition";
     import WorkoutSession from "./WorkoutSession.svelte";
     import SessionControlButton from "./SessionControlButton.svelte";
+    import { audioService } from "../services/audio";
 
     export let workout: {
         day: number;
@@ -34,28 +35,10 @@
         }
     }
 
-    let clickSound: HTMLAudioElement | null = null;
-    let closeSound: HTMLAudioElement | null = null;
-
-    function playClick() {
-        if (!clickSound) {
-            clickSound = new Audio("/audio/click.mp3");
-        }
-        clickSound.currentTime = 0;
-        clickSound
-            .play()
-            .catch((e) => console.error("Error playing click sound:", e));
-    }
-
-    function playClose() {
-        if (!closeSound) {
-            closeSound = new Audio("/audio/close.mp3");
-        }
-        closeSound.currentTime = 0;
-        closeSound
-            .play()
-            .catch((e) => console.error("Error playing close sound:", e));
-    }
+    const SOUNDS = {
+        click: "/audio/click.mp3",
+        close: "/audio/close.mp3",
+    };
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape") {
@@ -137,7 +120,7 @@
                 <button
                     class="close-btn"
                     onclick={() => {
-                        playClose();
+                        audioService.play(SOUNDS.close);
                         onClose();
                     }}
                 >
@@ -190,7 +173,7 @@
                             <button
                                 class="action-btn completed flex-1 flex items-center justify-center gap-2"
                                 onclick={() => {
-                                    playClick();
+                                    audioService.play(SOUNDS.click);
                                     onToggleComplete();
                                 }}
                             >
@@ -200,7 +183,7 @@
                             <button
                                 class="action-btn flex-1 flex items-center justify-center gap-2"
                                 onclick={() => {
-                                    playClick();
+                                    audioService.play(SOUNDS.click);
                                     startSession();
                                 }}
                             >
@@ -208,11 +191,11 @@
                                 <span>↻</span>
                             </button>
                         </div>
-                    {:else}
+                    {:else if workout.day !== 31}
                         <SessionControlButton
                             variant="skip"
                             onClick={() => {
-                                playClick();
+                                audioService.play(SOUNDS.click);
                                 startSession();
                             }}
                         >

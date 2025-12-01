@@ -1,20 +1,14 @@
 <script lang="ts">
+    import { audioService } from "../services/audio";
+
     interface Props {
         completedDays?: string[];
         ondayclick: (detail: { day: number; dateKey: string }) => void;
     }
 
-    let clickSound: HTMLAudioElement | null = null;
-
-    function playClick() {
-        if (!clickSound) {
-            clickSound = new Audio("/audio/click.mp3");
-        }
-        clickSound.currentTime = 0;
-        clickSound
-            .play()
-            .catch((e) => console.error("Error playing click sound:", e));
-    }
+    const SOUNDS = {
+        click: "/audio/click.mp3",
+    };
 
     let { completedDays = [], ondayclick }: Props = $props();
 
@@ -96,7 +90,7 @@
             <button
                 class="text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors text-xl font-bold p-2 flex-1"
                 onclick={() => {
-                    playClick();
+                    audioService.play(SOUNDS.click);
                     prevMonth();
                 }}
                 aria-label="Previous Month"
@@ -113,7 +107,7 @@
             <button
                 class="text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors text-xl font-bold p-2 flex-1"
                 onclick={() => {
-                    playClick();
+                    audioService.play(SOUNDS.click);
                     nextMonth();
                 }}
                 aria-label="Next Month"
@@ -170,7 +164,7 @@
             <button
                 class="{baseClass} {stateClass} {todayClass}"
                 onclick={() => {
-                    playClick();
+                    audioService.play(SOUNDS.click);
                     handleDayClick(day);
                 }}
             >

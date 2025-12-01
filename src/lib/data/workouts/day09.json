@@ -1,0 +1,26 @@
+{
+    "id": "day09",
+    "title": "Total Body - Day 9: Abs & Core",
+    "description": "Abs & core circuit inspired by Darebee's Total Body Day 9: flutter kicks, leg circles, dead bug and back extensions. Perform 5 sets (Level III) with no rest between exercises and 2 minutes rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 0,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Flutter Kicks",
+            "reps": 10
+        },
+        {
+            "name": "Leg Circles",
+            "reps": 10
+        },
+        {
+            "name": "Dead Bug",
+            "reps": 10
+        },
+        {
+            "name": "Back Extensions",
+            "reps": 10
+        }
+    ]
+}

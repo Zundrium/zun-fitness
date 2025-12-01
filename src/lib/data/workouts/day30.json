@@ -1,0 +1,26 @@
+{
+    "id": "day30",
+    "title": "Total Body - Day 30: Abs & Core",
+    "description": "Abs & core circuit: leg raises, flutter kicks, raised legs circles and a hollow hold. Perform 5 sets (Level III) with 2 minutes rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 0,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Leg Raises",
+            "reps": 14
+        },
+        {
+            "name": "Flutter Kicks",
+            "reps": 14
+        },
+        {
+            "name": "Raised Legs Circles",
+            "reps": 14
+        },
+        {
+            "name": "Hollow Hold",
+            "duration": 10
+        }
+    ]
+}

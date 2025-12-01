@@ -1,0 +1,34 @@
+{
+    "id": "day17",
+    "title": "Total Body - Day 17: Cardio Burn",
+    "description": "Cardio burn circuit: toe tap hops, jumping jacks, toe tap hops, jumping jacks, hops on the spot and jumping jacks. Perform 7 sets (Level III) with 2 minutes rest between sets.",
+    "sets": 7,
+    "restBetweenActivities": 0,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Toe Tap Hops",
+            "reps": 12
+        },
+        {
+            "name": "Jumping Jacks",
+            "reps": 12
+        },
+        {
+            "name": "Toe Tap Hops",
+            "reps": 12
+        },
+        {
+            "name": "Jumping Jacks",
+            "reps": 12
+        },
+        {
+            "name": "Hops on the Spot",
+            "reps": 12
+        },
+        {
+            "name": "Jumping Jacks",
+            "reps": 12
+        }
+    ]
+}

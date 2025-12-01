@@ -1,0 +1,26 @@
+{
+    "id": "day16",
+    "title": "Total Body - Day 16: Abs & Core",
+    "description": "Abs & core circuit: high crunches, sitting twists, crunch kicks and leg raises. Perform 5 sets (Level III) with 2 minutes rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 10,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "High Crunches",
+            "reps": 12
+        },
+        {
+            "name": "Sitting Twists",
+            "reps": 12
+        },
+        {
+            "name": "Crunch Kicks",
+            "reps": 12
+        },
+        {
+            "name": "Leg Raises",
+            "reps": 12
+        }
+    ]
+}

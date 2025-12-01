@@ -1,0 +1,37 @@
+﻿============================================================
+≡ƒÅï∩╕Å  WORKOUT FILES VALIDATION
+============================================================
+
+
+≡ƒôï Scanning 13 workout files...
+Γ£à Found 66 unique activities
+
+≡ƒöì Validating files...
+
+============================================================
+≡ƒôè VALIDATION RESULTS
+============================================================
+
+≡ƒöè Missing Audio Files (5):
+  Γ¥î Bridges (used in: day12)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\audio\voice\heart\bridges.mp3
+  Γ¥î Get-Ups (used in: day12)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\audio\voice\heart\get-ups.mp3
+  Γ¥î Prone Reverse Fly (used in: day12)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\audio\voice\heart\prone-reverse-fly.mp3
+  Γ¥î Reverse Angels (used in: day12)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\audio\voice\heart\reverse-angels.mp3
+  Γ¥î W-Extensions (used in: day12)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\audio\voice\heart\w-extensions.mp3
+
+≡ƒû╝∩╕Å  Missing Image Files (3):
+  Γ¥î Flutter Kicks (used in: day09)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\activities\flutter-kicks.webp
+  Γ¥î Side Plank left (used in: day07)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\activities\side-plank-left.webp
+  Γ¥î Side Plank right (used in: day07)
+     ΓåÆ C:\Users\Sem\Documents\Projects\pull-push-done\static\activities\side-plank-right.webp
+
+============================================================
+Γ¥î VALIDATION FAILED: 8 files missing
+============================================================

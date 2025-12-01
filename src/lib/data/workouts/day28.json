@@ -1,0 +1,42 @@
+{
+    "id": "day28",
+    "title": "Total Body - Day 28: Yoga",
+    "description": "Hold each pose for 30 seconds then move on to the next one. Repeat the sequence again on the other side.",
+    "sets": 1,
+    "restBetweenActivities": 10,
+    "restBetweenSets": 30,
+    "activities": [
+        {
+            "name": "High Plank Hold",
+            "duration": 30
+        },
+        {
+            "name": "Knees-Hover Plank",
+            "duration": 30
+        },
+        {
+            "name": "Downward-Facing Dog",
+            "duration": 30
+        },
+        {
+            "name": "Upward-Facing Dog",
+            "duration": 30
+        },
+        {
+            "name": "Reclined Spinal Twist right",
+            "duration": 30
+        },
+        {
+            "name": "Tabletop Bridge Reach right",
+            "duration": 30
+        },
+        {
+            "name": "Reclined Spinal Twist left",
+            "duration": 30
+        },
+        {
+            "name": "Tabletop Bridge Reach left",
+            "duration": 30
+        }
+    ]
+}

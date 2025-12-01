@@ -1,0 +1,26 @@
+{
+    "id": "day23",
+    "title": "Total Body - Day 23: Abs & Core",
+    "description": "Abs & core circuit: knee-to-elbow, heel taps, scissors and windshield wipers. Perform 5 sets (Level III) with 2 minutes rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 0,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "Knee-to-Elbow",
+            "reps": 12
+        },
+        {
+            "name": "Heel Taps",
+            "reps": 12
+        },
+        {
+            "name": "Scissors",
+            "reps": 12
+        },
+        {
+            "name": "Windshield Wipers",
+            "reps": 12
+        }
+    ]
+}

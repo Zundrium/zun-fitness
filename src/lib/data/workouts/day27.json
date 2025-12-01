@@ -1,0 +1,34 @@
+{
+    "id": "day27",
+    "title": "Total Body - Day 27: Cardio HIIT",
+    "description": "30-second intervals: high knees, butt kicks, high knees, split jacks, straight leg bounds and split jacks. Perform 7 sets (Level III) with 2 minutes rest between sets.",
+    "sets": 7,
+    "restBetweenActivities": 0,
+    "restBetweenSets": 120,
+    "activities": [
+        {
+            "name": "High Knees",
+            "duration": 30
+        },
+        {
+            "name": "Butt Kicks",
+            "duration": 30
+        },
+        {
+            "name": "High Knees",
+            "duration": 30
+        },
+        {
+            "name": "Split Jacks",
+            "duration": 30
+        },
+        {
+            "name": "Straight Leg Bounds",
+            "duration": 30
+        },
+        {
+            "name": "Split Jacks",
+            "duration": 30
+        }
+    ]
+}

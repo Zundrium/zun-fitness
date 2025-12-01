@@ -1,0 +1,30 @@
+{
+    "id": "day26",
+    "title": "Total Body - Day 26: Build",
+    "description": "Five-set total body routine: bridges, side bridges, reverse angels, prone reverse fly and W-extensions. Perform 5 sets in total with 60 seconds rest between exercises and 30 seconds rest between sets.",
+    "sets": 5,
+    "restBetweenActivities": 60,
+    "restBetweenSets": 30,
+    "activities": [
+        {
+            "name": "Bridges",
+            "reps": 28
+        },
+        {
+            "name": "Side Bridges",
+            "reps": 28
+        },
+        {
+            "name": "Reverse Angels",
+            "reps": 16
+        },
+        {
+            "name": "Prone Reverse Fly",
+            "reps": 16
+        },
+        {
+            "name": "W-Extensions",
+            "reps": 16
+        }
+    ]
+}

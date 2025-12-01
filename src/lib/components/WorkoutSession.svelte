@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { fade, fly } from "svelte/transition";
     import SessionControlButton from "./SessionControlButton.svelte";
+    import { audioService } from "../services/audio";
 
     export let workoutData: any;
     export let onComplete: () => void;
@@ -22,9 +23,6 @@
 
     // Screen Wake Lock to keep screen on during workout
     let wakeLock: any = null;
-
-    // Track active sounds to cancel them if needed
-    let activeSounds = new Set<HTMLAudioElement>();
 
     $: currentActivity = workoutData.activities[currentActivityIndex];
     $: totalActivities = workoutData.activities.length;
@@ -78,12 +76,12 @@
     function startIntro() {
         isIntro = true;
         timeLeft = 10;
-        playSound(introSound);
+        audioService.play(SOUNDS.intro);
         const nextActivity = workoutData.activities[0];
         if (nextActivity) {
             setTimeout(() => {
                 playChainedVoice(
-                    startingProcedureNextVoiceSound,
+                    SOUNDS.startingProcedureNextVoice,
                     nextActivity.name,
                 );
             }, 3000);
@@ -107,7 +105,7 @@
             isRepBased = false;
         }
 
-        playSound(startSound);
+        audioService.play(SOUNDS.start);
         startTimer();
     }
 
@@ -116,7 +114,7 @@
         isRepBased = false;
 
         let nextActivityName: string | null = null;
-        let prefixVoice: HTMLAudioElement | null = null;
+        let prefixVoice: string | null = null;
 
         // Check if it was the last activity of the set
         if (currentActivityIndex >= totalActivities - 1) {
@@ -126,7 +124,7 @@
                 const firstActivity = workoutData.activities[0];
                 if (firstActivity) {
                     nextActivityName = firstActivity.name;
-                    prefixVoice = setCompleteNextVoiceSound;
+                    prefixVoice = SOUNDS.setCompleteNextVoice;
                 }
             } else {
                 // Workout complete!
@@ -139,7 +137,7 @@
                 workoutData.activities[currentActivityIndex + 1];
             if (nextActivity) {
                 nextActivityName = nextActivity.name;
-                prefixVoice = activityCompleteNextVoiceSound;
+                prefixVoice = SOUNDS.activityCompleteNextVoice;
             }
         }
 
@@ -161,12 +159,12 @@
                     if (isRepBased) {
                         // For rep-based: beep every 2 seconds
                         if (timeLeft % 2 === 0) {
-                            playSound(beepSound);
+                            audioService.play(SOUNDS.beep);
                         }
                     } else {
                         // For duration-based: tick every 10s and last 3s
                         if (timeLeft % 10 === 0 || timeLeft <= 3) {
-                            playSound(tickSound);
+                            audioService.play(SOUNDS.tick);
                         }
                     }
                 }
@@ -201,8 +199,8 @@
 
     function completeWorkout() {
         clearInterval(timerInterval);
-        playSound(completeSound);
-        playSound(missionCompleteVoiceSound);
+        audioService.play(SOUNDS.complete);
+        audioService.play(SOUNDS.missionCompleteVoice);
         onComplete();
     }
 
@@ -211,7 +209,7 @@
     }
 
     function skip() {
-        stopAllSounds();
+        audioService.stopAll();
         handleTimerComplete();
     }
 
@@ -225,7 +223,7 @@
         const newSets = totalSets + delta;
         if (newSets >= 1 && newSets <= 10) {
             totalSets = newSets;
-            playSound(clickSound);
+            audioService.play(SOUNDS.click);
         }
     }
 
@@ -234,76 +232,37 @@
         startIntro();
     }
 
-    // Sounds
-    let tickSound: HTMLAudioElement;
-    let startSound: HTMLAudioElement;
-    let completeSound: HTMLAudioElement;
-    let introSound: HTMLAudioElement;
-    let beepSound: HTMLAudioElement;
-
-    let missionCompleteVoiceSound: HTMLAudioElement;
-    let startingProcedureNextVoiceSound: HTMLAudioElement;
-    let activityCompleteNextVoiceSound: HTMLAudioElement;
-    let setCompleteNextVoiceSound: HTMLAudioElement;
-
-    let clickSound: HTMLAudioElement;
-    let closeSound: HTMLAudioElement;
+    // Sound Constants
+    const SOUNDS = {
+        tick: "/audio/second_tick.mp3",
+        start: "/audio/activity_start_ping.mp3",
+        complete: "/audio/complete.mp3",
+        intro: "/audio/intro.mp3",
+        beep: "/audio/beep.mp3",
+        missionCompleteVoice: "/audio/voice/heart/mission-completed.mp3",
+        startingProcedureNextVoice:
+            "/audio/voice/heart/starting-procedure.-next-activity-is.mp3",
+        activityCompleteNextVoice:
+            "/audio/voice/heart/activity-complete.-next-activity-is.mp3",
+        setCompleteNextVoice:
+            "/audio/voice/heart/set-complete.-next-activity-is.mp3",
+        click: "/audio/click.mp3",
+        close: "/audio/close.mp3",
+    };
 
     onMount(() => {
-        tickSound = new Audio("/audio/second_tick.mp3");
-        startSound = new Audio("/audio/activity_start_ping.mp3");
-        completeSound = new Audio("/audio/complete.mp3");
-        introSound = new Audio("/audio/intro.mp3");
-        beepSound = new Audio("/audio/beep.mp3");
-
-        missionCompleteVoiceSound = new Audio(
-            "/audio/voice/heart/mission-completed.mp3",
-        );
-
-        startingProcedureNextVoiceSound = new Audio(
-            "/audio/voice/heart/starting-procedure.-next-activity-is.mp3",
-        );
-        activityCompleteNextVoiceSound = new Audio(
-            "/audio/voice/heart/activity-complete.-next-activity-is.mp3",
-        );
-        setCompleteNextVoiceSound = new Audio(
-            "/audio/voice/heart/set-complete.-next-activity-is.mp3",
-        );
-
-        clickSound = new Audio("/audio/click.mp3");
-        closeSound = new Audio("/audio/close.mp3");
-
         // Preload sounds
-        tickSound.load();
-        startSound.load();
-        completeSound.load();
-        introSound.load();
-        beepSound.load();
-
-        missionCompleteVoiceSound.load();
-
-        startingProcedureNextVoiceSound.load();
-        activityCompleteNextVoiceSound.load();
-        setCompleteNextVoiceSound.load();
-
-        clickSound.load();
-        closeSound.load();
+        audioService.preload(Object.values(SOUNDS));
 
         // Request wake lock to keep screen on
         requestWakeLock();
 
         // Re-acquire wake lock if user switches apps and comes back
         document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        // startIntro();
     });
 
-    function getActivityVoice(name: string): HTMLAudioElement | null {
-        // Generate voice path from activity name
-        const voicePath = `/audio/voice/heart/${name.toLowerCase().replace(/ /g, "-")}.mp3`;
-        const audio = new Audio(voicePath);
-        audio.load();
-        return audio;
+    function getActivityVoiceUrl(name: string): string {
+        return `/audio/voice/heart/${name.toLowerCase().replace(/ /g, "-")}.mp3`;
     }
 
     // Screen Wake Lock functions
@@ -344,62 +303,26 @@
     onDestroy(() => {
         clearInterval(timerInterval);
         releaseWakeLock();
-        stopAllSounds();
+        audioService.stopAll();
         document.removeEventListener(
             "visibilitychange",
             handleVisibilityChange,
         );
     });
 
-    function playChainedVoice(
-        prefixSound: HTMLAudioElement,
-        activityName: string,
-    ) {
-        if (!prefixSound || !activityName) {
+    async function playChainedVoice(prefixUrl: string, activityName: string) {
+        if (!prefixUrl || !activityName) {
             return;
         }
 
-        const activityVoice = getActivityVoice(activityName);
+        const activityVoiceUrl = getActivityVoiceUrl(activityName);
 
-        // If we don't have a dedicated voice for this activity, just play the prefix
-        if (!activityVoice) {
-            playSound(prefixSound);
-            return;
+        try {
+            await audioService.play(prefixUrl);
+            await audioService.play(activityVoiceUrl);
+        } catch (e) {
+            console.error("Error playing chained voice:", e);
         }
-
-        prefixSound.onended = () => {
-            prefixSound.onended = null;
-            playSound(activityVoice);
-        };
-
-        playSound(prefixSound);
-    }
-
-    function playSound(sound: HTMLAudioElement) {
-        if (sound) {
-            sound.currentTime = 0;
-            activeSounds.add(sound);
-            sound
-                .play()
-                .then(() => {
-                    sound.onended = () => {
-                        activeSounds.delete(sound);
-                        sound.onended = null;
-                    };
-                })
-                .catch((e) => {
-                    console.error("Error playing sound:", e);
-                    activeSounds.delete(sound);
-                });
-        }
-    }
-
-    function stopAllSounds() {
-        activeSounds.forEach((sound) => {
-            sound.pause();
-            sound.currentTime = 0;
-        });
-        activeSounds.clear();
     }
 </script>
 
@@ -436,8 +359,8 @@
     <button
         class="absolute top-8 right-8 z-30 text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors p-2"
         on:click={() => {
-            playSound(closeSound);
-            stopAllSounds();
+            audioService.play(SOUNDS.close);
+            audioService.stopAll();
             onCancel();
         }}
         aria-label="Abort Session"
@@ -689,7 +612,7 @@
                 <SessionControlButton
                     variant="skip"
                     onClick={() => {
-                        playSound(clickSound);
+                        audioService.play(SOUNDS.click);
                         beginSession();
                     }}
                 >
@@ -699,7 +622,7 @@
                 <SessionControlButton
                     variant="skip"
                     onClick={() => {
-                        playSound(clickSound);
+                        audioService.play(SOUNDS.click);
                         skip();
                     }}
                 >
@@ -709,7 +632,7 @@
                 <button
                     class="mech-btn-secondary"
                     on:click={() => {
-                        playSound(clickSound);
+                        audioService.play(SOUNDS.click);
                         togglePause();
                     }}
                 >
@@ -718,7 +641,7 @@
                 <SessionControlButton
                     variant="skip"
                     onClick={() => {
-                        playSound(clickSound);
+                        audioService.play(SOUNDS.click);
                         skip();
                     }}
                 >
@@ -728,8 +651,8 @@
             <SessionControlButton
                 variant="abort"
                 onClick={() => {
-                    playSound(clickSound);
-                    stopAllSounds();
+                    audioService.play(SOUNDS.click);
+                    audioService.stopAll();
                     onCancel();
                 }}
             >
