@@ -230,46 +230,4 @@
         text-transform: uppercase;
         color: var(--color-dim);
     }
-
-    .loading-bar {
-        position: relative;
-        width: min(420px, 80vw);
-        height: 6px;
-        border: 1px solid var(--color-primary);
-        background: var(--color-surface);
-        overflow: hidden;
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-    }
-
-    .loading-bar-fill {
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0;
-        background: linear-gradient(
-            90deg,
-            rgba(216, 241, 255, 0.1),
-            rgba(216, 241, 255, 0.9),
-            rgba(255, 75, 43, 0.9),
-            rgba(216, 241, 255, 0.9),
-            rgba(216, 241, 255, 0.1)
-        );
-        animation: loading-bar-fill 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-
-    @keyframes loading-bar-fill {
-        0% {
-            width: 0;
-        }
-        20% {
-            width: 25%;
-        }
-        60% {
-            width: 70%;
-        }
-        100% {
-            width: 100%;
-        }
-    }
 </style>

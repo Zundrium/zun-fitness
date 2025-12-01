@@ -106,13 +106,21 @@
 {#if workout}
     <div
         class="backdrop"
-        on:click={onClose}
+        onclick={onClose}
+        role="button"
+        tabindex="0"
+        onkeydown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onClose();
+        }}
         transition:fade={{ duration: 150 }}
     >
         <div
             class="modal max-w-xl {isSessionActive ? '' : 'mech-border'}"
             class:session-active={isSessionActive}
-            on:click|stopPropagation
+            onclick={(e) => e.stopPropagation()}
+            role="button"
+            tabindex="0"
+            onkeydown={(e) => e.stopPropagation()}
             transition:glitch={{ duration: 200 }}
         >
             {#if isSessionActive && workoutData}
@@ -128,7 +136,7 @@
 
                 <button
                     class="close-btn"
-                    on:click={() => {
+                    onclick={() => {
                         playClose();
                         onClose();
                     }}
@@ -181,7 +189,7 @@
                         <div class="flex gap-2 mt-4">
                             <button
                                 class="action-btn completed flex-1 flex items-center justify-center gap-2"
-                                on:click={() => {
+                                onclick={() => {
                                     playClick();
                                     onToggleComplete();
                                 }}
@@ -191,7 +199,7 @@
                             </button>
                             <button
                                 class="action-btn flex-1 flex items-center justify-center gap-2"
-                                on:click={() => {
+                                onclick={() => {
                                     playClick();
                                     startSession();
                                 }}
@@ -336,17 +344,5 @@
         color: #000;
         border-color: var(--color-primary);
         box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-    }
-
-    .action-btn-initiate {
-        background: var(--color-primary);
-        color: var(--color-bg);
-        border-color: var(--color-primary);
-        box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
-    }
-
-    .action-btn-initiate:hover {
-        color: var(--color-bg);
-        box-shadow: 0 0 28px rgba(0, 247, 255, 0.7);
     }
 </style>

@@ -10,7 +10,8 @@
     let currentSet = 1;
     let currentActivityIndex = 0;
     let isResting = false;
-    let isIntro = true;
+    let isSetup = true;
+    let isIntro = false;
     let timeLeft = 0;
     let timerInterval: any;
     let isPaused = false;
@@ -22,9 +23,12 @@
     // Screen Wake Lock to keep screen on during workout
     let wakeLock: any = null;
 
+    // Track active sounds to cancel them if needed
+    let activeSounds = new Set<HTMLAudioElement>();
+
     $: currentActivity = workoutData.activities[currentActivityIndex];
     $: totalActivities = workoutData.activities.length;
-    $: totalSets = workoutData.sets;
+    let totalSets = workoutData.sets;
 
     // Generate image path from activity name
     $: displayActivity = isIntro
@@ -207,6 +211,7 @@
     }
 
     function skip() {
+        stopAllSounds();
         handleTimerComplete();
     }
 
@@ -214,6 +219,19 @@
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function adjustSets(delta: number) {
+        const newSets = totalSets + delta;
+        if (newSets >= 1 && newSets <= 10) {
+            totalSets = newSets;
+            playSound(clickSound);
+        }
+    }
+
+    function beginSession() {
+        isSetup = false;
+        startIntro();
     }
 
     // Sounds
@@ -277,7 +295,7 @@
         // Re-acquire wake lock if user switches apps and comes back
         document.addEventListener("visibilitychange", handleVisibilityChange);
 
-        startIntro();
+        // startIntro();
     });
 
     function getActivityVoice(name: string): HTMLAudioElement | null {
@@ -326,6 +344,7 @@
     onDestroy(() => {
         clearInterval(timerInterval);
         releaseWakeLock();
+        stopAllSounds();
         document.removeEventListener(
             "visibilitychange",
             handleVisibilityChange,
@@ -359,8 +378,28 @@
     function playSound(sound: HTMLAudioElement) {
         if (sound) {
             sound.currentTime = 0;
-            sound.play().catch((e) => console.error("Error playing sound:", e));
+            activeSounds.add(sound);
+            sound
+                .play()
+                .then(() => {
+                    sound.onended = () => {
+                        activeSounds.delete(sound);
+                        sound.onended = null;
+                    };
+                })
+                .catch((e) => {
+                    console.error("Error playing sound:", e);
+                    activeSounds.delete(sound);
+                });
         }
+    }
+
+    function stopAllSounds() {
+        activeSounds.forEach((sound) => {
+            sound.pause();
+            sound.currentTime = 0;
+        });
+        activeSounds.clear();
     }
 </script>
 
@@ -398,6 +437,7 @@
         class="absolute top-8 right-8 z-30 text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors p-2"
         on:click={() => {
             playSound(closeSound);
+            stopAllSounds();
             onCancel();
         }}
         aria-label="Abort Session"
@@ -422,20 +462,28 @@
     <div class="relative z-20 flex flex-col items-center w-full max-w-2xl px-6">
         <!-- Top Bar: Counters (Centered) -->
         <div class="w-full flex justify-center items-center gap-8 mb-6">
-            <div class="hud-counter">
-                <span class="label">SET</span>
-                <span class="value"
-                    >{currentSet} <span class="total">/ {totalSets}</span></span
-                >
-            </div>
-            <div class="hud-separator"></div>
-            <div class="hud-counter">
-                <span class="label">ACTIVITY</span>
-                <span class="value"
-                    >{currentActivityIndex + 1}
-                    <span class="total">/ {totalActivities}</span></span
-                >
-            </div>
+            {#if isSetup}
+                <div class="hud-counter">
+                    <span class="label">TARGET</span>
+                    <span class="value">CONFIGURATION</span>
+                </div>
+            {:else}
+                <div class="hud-counter">
+                    <span class="label">SET</span>
+                    <span class="value"
+                        >{currentSet}
+                        <span class="total">/ {totalSets}</span></span
+                    >
+                </div>
+                <div class="hud-separator"></div>
+                <div class="hud-counter">
+                    <span class="label">ACTIVITY</span>
+                    <span class="value"
+                        >{currentActivityIndex + 1}
+                        <span class="total">/ {totalActivities}</span></span
+                    >
+                </div>
+            {/if}
         </div>
 
         <!-- Activity Visual -->
@@ -470,103 +518,184 @@
 
         <!-- Status & Timer -->
         <div class="flex flex-col items-center mb-8 w-full gap-2">
-            <h2
-                class="text-2xl font-display mb-2 tracking-widest uppercase text-glow glitch-title transition-colors duration-300 {isResting ||
-                isIntro
-                    ? 'text-[var(--color-secondary)]'
-                    : 'text-[var(--color-primary)]'}"
-                data-text={isIntro
-                    ? "// SYSTEM_INIT"
-                    : isResting
-                      ? "// RECOVERY_MODE"
-                      : currentActivity.name}
-            >
-                {#if isIntro}
-                    // SYSTEM_INIT
-                {:else if isResting}
-                    // RECOVERY_MODE
-                {:else}
-                    {currentActivity.name}
-                {/if}
-            </h2>
+            {#if isSetup}
+                <h2
+                    class="text-2xl font-display mb-2 tracking-widest uppercase text-[var(--color-primary)] text-glow"
+                >
+                    // PROTOCOL_SETUP
+                </h2>
 
-            <!-- Next Activity Info -->
-            {#if isResting || isIntro}
-                <div class="flex flex-col items-center animate-fade-in">
-                    <span
-                        class="text-[var(--color-dim)] text-xs font-mono tracking-[0.2em] mb-1"
-                        >NEXT_PROTOCOL</span
+                <div class="flex items-center gap-8 my-4">
+                    <button
+                        class="text-[var(--color-primary)] hover:text-white transition-colors p-4 border border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10"
+                        on:click={() => adjustSets(-1)}
+                        aria-label="Decrease sets"
                     >
-                    <span
-                        class="text-xl font-mono uppercase text-white tracking-wide"
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-8 w-8"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M20 12H4"
+                            />
+                        </svg>
+                    </button>
+
+                    <div class="flex flex-col items-center">
+                        <span
+                            class="text-6xl font-bold text-white tracking-tighter tabular-nums"
+                            style="text-shadow: 0 0 20px rgba(0,243,255,0.5);"
+                        >
+                            {totalSets}
+                        </span>
+                        <span
+                            class="text-[var(--color-dim)] text-sm font-mono tracking-[0.2em]"
+                            >SETS</span
+                        >
+                    </div>
+
+                    <button
+                        class="text-[var(--color-primary)] hover:text-white transition-colors p-4 border border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10"
+                        on:click={() => adjustSets(1)}
+                        aria-label="Increase sets"
                     >
-                        {#if isIntro}
-                            {workoutData.activities[0].name}
-                        {:else if currentActivityIndex >= totalActivities - 1 && currentSet < totalSets}
-                            {workoutData.activities[0].name}
-                            <span class="text-[var(--color-dim)] text-sm ml-2"
-                                >[SET {currentSet + 1}]</span
-                            >
-                        {:else if currentActivityIndex < totalActivities - 1}
-                            {workoutData.activities[currentActivityIndex + 1]
-                                .name}
-                        {:else}
-                            SESSION_COMPLETE
-                        {/if}
-                    </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-8 w-8"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
+                    </button>
                 </div>
-            {/if}
+            {:else}
+                <h2
+                    class="text-2xl font-display mb-2 tracking-widest uppercase text-glow glitch-title transition-colors duration-300 {isResting ||
+                    isIntro
+                        ? 'text-[var(--color-secondary)]'
+                        : 'text-[var(--color-primary)]'}"
+                    data-text={isIntro
+                        ? "// SYSTEM_INIT"
+                        : isResting
+                          ? "// RECOVERY_MODE"
+                          : currentActivity.name}
+                >
+                    {#if isIntro}
+                        // SYSTEM_INIT
+                    {:else if isResting}
+                        // RECOVERY_MODE
+                    {:else}
+                        {currentActivity.name}
+                    {/if}
+                </h2>
 
-            <div class="relative flex flex-col items-center">
-                {#if isRepBased && !isResting && !isIntro}
-                    <div
-                        class="text-[var(--color-primary)] text-2xl font-mono tracking-widest mb-2 animate-pulse"
-                    >
-                        REPS: {currentRep} / {activityReps}
+                <!-- Next Activity Info -->
+                {#if isResting || isIntro}
+                    <div class="flex flex-col items-center animate-fade-in">
+                        <span
+                            class="text-[var(--color-dim)] text-xs font-mono tracking-[0.2em] mb-1"
+                            >NEXT_PROTOCOL</span
+                        >
+                        <span
+                            class="text-xl font-mono uppercase text-white tracking-wide"
+                        >
+                            {#if isIntro}
+                                {workoutData.activities[0].name}
+                            {:else if currentActivityIndex >= totalActivities - 1 && currentSet < totalSets}
+                                {workoutData.activities[0].name}
+                                <span
+                                    class="text-[var(--color-dim)] text-sm ml-2"
+                                    >[SET {currentSet + 1}]</span
+                                >
+                            {:else if currentActivityIndex < totalActivities - 1}
+                                {workoutData.activities[
+                                    currentActivityIndex + 1
+                                ].name}
+                            {:else}
+                                SESSION_COMPLETE
+                            {/if}
+                        </span>
                     </div>
                 {/if}
 
-                <div
-                    class="text-4xl font-bold text-white tracking-tighter tabular-nums timer-display"
-                    style="text-shadow: 0 0 20px rgba(255,255,255,0.5);"
-                >
-                    {formatTime(timeLeft)}
+                <div class="relative flex flex-col items-center">
+                    {#if isRepBased && !isResting && !isIntro}
+                        <div
+                            class="text-[var(--color-primary)] text-2xl font-mono tracking-widest mb-2 animate-pulse"
+                        >
+                            REPS: {currentRep} / {activityReps}
+                        </div>
+                    {/if}
+
+                    <div
+                        class="text-4xl font-bold text-white tracking-tighter tabular-nums timer-display"
+                        style="text-shadow: 0 0 20px rgba(255,255,255,0.5);"
+                    >
+                        {formatTime(timeLeft)}
+                    </div>
+                    <!-- Decorative lines around timer -->
+                    <div
+                        class="absolute -left-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
+                    ></div>
+                    <div
+                        class="absolute -right-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
+                    ></div>
                 </div>
-                <!-- Decorative lines around timer -->
-                <div
-                    class="absolute -left-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
-                ></div>
-                <div
-                    class="absolute -right-8 top-1/2 w-4 h-[1px] bg-[var(--color-dim)]"
-                ></div>
-            </div>
+            {/if}
         </div>
 
         <!-- Progress Bar -->
-        <div
-            class="w-full h-6 bg-[#111] border border-[var(--color-dim)] relative mb-6 overflow-hidden"
-        >
-            <!-- Ticks -->
-            <div class="absolute inset-0 flex justify-between px-1">
-                {#each Array(20) as _, i}
-                    <div class="w-[1px] h-full bg-[#222]"></div>
-                {/each}
-            </div>
-
+        {#if !isSetup}
             <div
-                class="h-full bg-[var(--color-primary)] relative transition-all duration-1000 ease-linear progress-glitch"
-                style="width: {progressPercentage}%"
+                class="w-full h-6 bg-[#111] border border-[var(--color-dim)] relative mb-6 overflow-hidden"
             >
-                <div class="absolute inset-0 bg-white/20 animate-pulse"></div>
+                <!-- Ticks -->
+                <div class="absolute inset-0 flex justify-between px-1">
+                    {#each Array(20) as _, i}
+                        <div class="w-[1px] h-full bg-[#222]"></div>
+                    {/each}
+                </div>
+
                 <div
-                    class="absolute right-0 top-0 bottom-0 w-[2px] bg-white box-shadow-[0_0_10px_white]"
-                ></div>
+                    class="h-full bg-[var(--color-primary)] relative transition-all duration-1000 ease-linear progress-glitch"
+                    style="width: {progressPercentage}%"
+                >
+                    <div
+                        class="absolute inset-0 bg-white/20 animate-pulse"
+                    ></div>
+                    <div
+                        class="absolute right-0 top-0 bottom-0 w-[2px] bg-white box-shadow-[0_0_10px_white]"
+                    ></div>
+                </div>
             </div>
-        </div>
+        {/if}
 
         <!-- Controls -->
         <div class="flex flex-col gap-3 z-30 w-full">
-            {#if isResting || isIntro}
+            {#if isSetup}
+                <SessionControlButton
+                    variant="skip"
+                    onClick={() => {
+                        playSound(clickSound);
+                        beginSession();
+                    }}
+                >
+                    INITIATE >>
+                </SessionControlButton>
+            {:else if isResting || isIntro}
                 <SessionControlButton
                     variant="skip"
                     onClick={() => {
@@ -600,6 +729,7 @@
                 variant="abort"
                 onClick={() => {
                     playSound(clickSound);
+                    stopAllSounds();
                     onCancel();
                 }}
             >

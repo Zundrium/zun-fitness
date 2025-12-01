@@ -8,10 +8,12 @@
 
     function playClick() {
         if (!clickSound) {
-            clickSound = new Audio('/audio/click.mp3');
+            clickSound = new Audio("/audio/click.mp3");
         }
         clickSound.currentTime = 0;
-        clickSound.play().catch((e) => console.error('Error playing click sound:', e));
+        clickSound
+            .play()
+            .catch((e) => console.error("Error playing click sound:", e));
     }
 
     let { completedDays = [], ondayclick }: Props = $props();
@@ -93,7 +95,7 @@
         <div class="flex items-center justify-center gap-4">
             <button
                 class="text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors text-xl font-bold p-2 flex-1"
-                on:click={() => {
+                onclick={() => {
                     playClick();
                     prevMonth();
                 }}
@@ -110,7 +112,7 @@
 
             <button
                 class="text-[var(--color-dim)] hover:text-[var(--color-primary)] transition-colors text-xl font-bold p-2 flex-1"
-                on:click={() => {
+                onclick={() => {
                     playClick();
                     nextMonth();
                 }}
@@ -156,7 +158,7 @@
                         : "bg-[var(--color-surface-light)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:shadow-[0_0_10px_rgba(0,243,255,0.1)]"}
 
             {@const todayClass = isToday
-                ? "ring-1 ring-[var(--color-primary)] ring-offset-1 ring-offset-black"
+                ? "ring-1 ring-[var(--color-primary)] ring-offset-1 ring-offset-black shadow-[0_0_15px_rgba(0,243,255,0.5)]"
                 : ""}
 
             {@const todayPulseClass = isToday
@@ -167,13 +169,14 @@
 
             <button
                 class="{baseClass} {stateClass} {todayClass}"
-                on:click={() => {
+                onclick={() => {
                     playClick();
                     handleDayClick(day);
                 }}
             >
-                    <span class="z-10 font-mono text-sm p-2 {todayPulseClass}">{day}</span>
-
+                <span class="z-10 font-mono text-sm p-2 {todayPulseClass}"
+                    >{day}</span
+                >
 
                 <!-- Corner marker for tech feel -->
                 <div
