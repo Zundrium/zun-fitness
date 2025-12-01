@@ -417,7 +417,7 @@
             <img
                 src={activityImagePath}
                 alt={displayActivity.name}
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain bg-white"
             />
 
             <!-- Tech Overlays -->
