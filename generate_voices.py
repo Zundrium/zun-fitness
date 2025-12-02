@@ -175,7 +175,7 @@ def main():
                 text_to_speak,
                 voice=voice,
                 speed=1.0,
-                lang='en-us'
+                lang='en-us',
             )
             
             if not isinstance(audio_data, np.ndarray):
