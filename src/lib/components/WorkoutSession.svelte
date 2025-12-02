@@ -55,13 +55,16 @@
     $: progressPercentage =
         ((currentTotalTime - timeLeft) / currentTotalTime) * 100;
 
-    // Rep Counter Logic
+    // Rep Counter Logic - Countdown instead of count up
     $: currentRep = isRepBased
-        ? Math.min(
-              Math.floor((currentTotalTime - timeLeft) / 2) + 1,
-              activityReps,
+        ? Math.max(
+              activityReps - Math.floor((currentTotalTime - timeLeft) / 2),
+              0,
           )
         : 0;
+
+    // Next rep number for voice countdown
+    $: nextRepCount = isRepBased && currentRep > 0 ? currentRep - 1 : null;
 
     function triggerStepTransitionEffect() {
         isStepTransitioning = false;
@@ -154,14 +157,29 @@
                 // Sound logic
                 if (timeLeft > 0) {
                     if (isRepBased) {
-                        // For rep-based: beep every 2 seconds
+                        // For rep-based: beep every 2 seconds + voice countdown
                         if (timeLeft % 2 === 0) {
                             audioService.play(SOUNDS.beep);
+
+                            // Play voice countdown for next rep
+                            if (nextRepCount !== null && nextRepCount > 0) {
+                                playRepVoice(nextRepCount);
+                            }
                         }
                     } else {
-                        // For duration-based: tick every 10s and last 3s
+                        // For duration-based: tick every 10s and last 3s + voice countdown
+
                         if (timeLeft % 10 === 0 || timeLeft <= 3) {
                             audioService.play(SOUNDS.tick);
+                        }
+
+                        if (!isIntro) {
+                            // Voice countdown: every 5 seconds, and every second for last 5 seconds
+                            if (timeLeft % 3 === 0 && timeLeft > 3) {
+                                playRepVoice(timeLeft);
+                            } else if (timeLeft <= 3 && timeLeft > 0) {
+                                playRepVoice(timeLeft);
+                            }
                         }
                     }
                 }
@@ -315,6 +333,14 @@
         } catch (e) {
             console.error("Error playing chained voice:", e);
         }
+    }
+
+    // Play voice number for rep countdown
+    function playRepVoice(repNumber: number) {
+        if (repNumber <= 0) return;
+
+        const voiceUrl = `/audio/voice/heart/${repNumber}.m4a`;
+        audioService.play(voiceUrl);
     }
 </script>
 
