@@ -36,8 +36,8 @@
     }
 
     const SOUNDS = {
-        click: "/audio/click.mp3",
-        close: "/audio/close.mp3",
+        click: "/audio/click.m4a",
+        close: "/audio/close.m4a",
     };
 
     function handleKeydown(event: KeyboardEvent) {

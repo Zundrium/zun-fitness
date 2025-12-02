@@ -80,10 +80,7 @@
         const nextActivity = workoutData.activities[0];
         if (nextActivity) {
             setTimeout(() => {
-                playChainedVoice(
-                    SOUNDS.startingProcedureNextVoice,
-                    nextActivity.name,
-                );
+                playChainedVoice(SOUNDS.nextActivityVoice, nextActivity.name);
             }, 3000);
         }
 
@@ -124,7 +121,7 @@
                 const firstActivity = workoutData.activities[0];
                 if (firstActivity) {
                     nextActivityName = firstActivity.name;
-                    prefixVoice = SOUNDS.setCompleteNextVoice;
+                    prefixVoice = SOUNDS.nextActivityVoice;
                 }
             } else {
                 // Workout complete!
@@ -137,7 +134,7 @@
                 workoutData.activities[currentActivityIndex + 1];
             if (nextActivity) {
                 nextActivityName = nextActivity.name;
-                prefixVoice = SOUNDS.activityCompleteNextVoice;
+                prefixVoice = SOUNDS.nextActivityVoice;
             }
         }
 
@@ -234,20 +231,15 @@
 
     // Sound Constants
     const SOUNDS = {
-        tick: "/audio/second_tick.mp3",
-        start: "/audio/activity_start_ping.mp3",
-        complete: "/audio/complete.mp3",
-        intro: "/audio/intro.mp3",
-        beep: "/audio/beep.mp3",
-        missionCompleteVoice: "/audio/voice/heart/mission-completed.mp3",
-        startingProcedureNextVoice:
-            "/audio/voice/heart/starting-procedure.-next-activity-is.mp3",
-        activityCompleteNextVoice:
-            "/audio/voice/heart/activity-complete.-next-activity-is.mp3",
-        setCompleteNextVoice:
-            "/audio/voice/heart/set-complete.-next-activity-is.mp3",
-        click: "/audio/click.mp3",
-        close: "/audio/close.mp3",
+        tick: "/audio/second_tick.m4a",
+        start: "/audio/activity_start_ping.m4a",
+        complete: "/audio/complete.m4a",
+        intro: "/audio/intro.m4a",
+        beep: "/audio/beep.m4a",
+        missionCompleteVoice: "/audio/voice/heart/mission-completed.m4a",
+        nextActivityVoice: "/audio/voice/heart/next-activity-is.m4a",
+        click: "/audio/click.m4a",
+        close: "/audio/close.m4a",
     };
 
     onMount(() => {
@@ -262,7 +254,7 @@
     });
 
     function getActivityVoiceUrl(name: string): string {
-        return `/audio/voice/heart/${name.toLowerCase().replace(/ /g, "-")}.mp3`;
+        return `/audio/voice/heart/${name.toLowerCase().replace(/ /g, "-")}.m4a`;
     }
 
     // Screen Wake Lock functions

@@ -7,7 +7,7 @@
     }
 
     const SOUNDS = {
-        click: "/audio/click.mp3",
+        click: "/audio/click.m4a",
     };
 
     let { completedDays = [], ondayclick }: Props = $props();

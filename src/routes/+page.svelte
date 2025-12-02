@@ -14,7 +14,7 @@
     let overlayPhase: "loading" | "split" | "done" = "loading";
     let hasBoundWelcomeBackListener = false;
 
-    const WELCOME_SOUND = "/audio/voice/heart/welcome-back.mp3";
+    const WELCOME_SOUND = "/audio/voice/heart/welcome-back.m4a";
 
     onMount(() => {
         const stored = localStorage.getItem("completedDays");

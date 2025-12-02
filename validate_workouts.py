@@ -79,7 +79,7 @@ def validate_files(activity_to_days: dict, audio_dir: Path, image_dir: Path) -> 
         days = ", ".join(activity_to_days[name])
         
         # Check audio file
-        audio_file = audio_dir / f"{normalized}.mp3"
+        audio_file = audio_dir / f"{normalized}.m4a"
         if not audio_file.exists():
             missing_audio.append(f"  ❌ {name} (used in: {days})\n     → {audio_file}")
         

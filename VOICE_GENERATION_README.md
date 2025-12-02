@@ -55,7 +55,7 @@ Voice files are saved as:
 - Format: WAV
 - Sample Rate: 24000 Hz
 - Location: `static/audio/voice/sky/`
-- Naming: Activity names converted to lowercase with hyphens (e.g., "High Knees" → "high-knees.mp3")
+- Naming: Activity names converted to lowercase with hyphens (e.g., "High Knees" → "high-knees.m4a")
 
 ## Features
 
