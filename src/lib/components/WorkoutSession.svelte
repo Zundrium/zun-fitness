@@ -175,7 +175,7 @@
 
                         if (!isIntro) {
                             // Voice countdown: every 5 seconds, and every second for last 5 seconds
-                            if (timeLeft % 3 === 0 && timeLeft > 3) {
+                            if (timeLeft % 5 === 0 && timeLeft > 3) {
                                 playRepVoice(timeLeft);
                             } else if (timeLeft <= 3 && timeLeft > 0) {
                                 playRepVoice(timeLeft);
