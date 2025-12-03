@@ -99,7 +99,8 @@ function processAudio(inputPath, outputPath) {
         const filterComplex = [
             'aphaser=in_gain=0.8:out_gain=0.6:delay=3.0:decay=0.3:speed=2.0:type=t',
             'chorus=0.7:0.3:5:0.1:5:2',
-            'aecho=0.8:0.9:50:0.3'
+            'aecho=0.8:0.9:50:0.3',
+            'volume=12.0'
         ].join(',');
 
         const args = [
