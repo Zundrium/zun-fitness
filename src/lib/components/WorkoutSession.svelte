@@ -41,6 +41,7 @@
 
     // Progress Bar Logic
     $: activityReps = currentActivity.reps || currentActivity.count || 0;
+    $: secondsPerRep = Math.max(1, Math.round(2 / (currentActivity.tempo ?? 1)));
     $: currentTotalTime = isIntro
         ? 10
         : isResting
@@ -49,7 +50,7 @@
               ? workoutData.restBetweenSets || 60
               : workoutData.restBetweenActivities
           : isRepBased
-            ? activityReps * 2
+            ? activityReps * secondsPerRep
             : currentActivity.duration;
 
     $: progressPercentage =
@@ -58,7 +59,7 @@
     // Rep Counter Logic - Countdown instead of count up
     $: currentRep = isRepBased
         ? Math.max(
-              activityReps - Math.floor((currentTotalTime - timeLeft) / 2),
+              activityReps - Math.floor((currentTotalTime - timeLeft) / secondsPerRep),
               0,
           )
         : 0;
@@ -98,7 +99,7 @@
 
         const reps = activity.reps || activity.count;
         if (reps) {
-            timeLeft = reps * 2;
+            timeLeft = reps * secondsPerRep;
             isRepBased = true;
         } else {
             timeLeft = activity.duration;
@@ -157,8 +158,8 @@
                 // Sound logic
                 if (timeLeft > 0) {
                     if (isRepBased) {
-                        // For rep-based: beep every 2 seconds + voice countdown
-                        if (timeLeft % 2 === 0) {
+                        // For rep-based: beep every secondsPerRep seconds + voice countdown
+                        if (timeLeft % secondsPerRep === 0) {
                             audioService.play(SOUNDS.beep);
 
                             // Play voice countdown for next rep

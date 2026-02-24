@@ -3,6 +3,7 @@
     import Clock from "$lib/components/Clock.svelte";
     import Calendar from "$lib/components/Calendar.svelte";
     import WorkoutModal from "$lib/components/WorkoutModal.svelte";
+    import MusicPlayer from "$lib/components/MusicPlayer.svelte";
     import workoutsData from "$lib/data/workouts.json";
     import { audioService } from "$lib/services/audio";
 
@@ -13,6 +14,7 @@
 
     let overlayPhase: "loading" | "split" | "done" = "loading";
     let hasBoundWelcomeBackListener = false;
+    let musicPlayer: MusicPlayer | undefined;
 
     const WELCOME_SOUND = "/audio/voice/heart/welcome-back.m4a";
 
@@ -30,12 +32,13 @@
                 const tryPlayWelcomeBack = () => {
                     audioService
                         .play(WELCOME_SOUND)
-                        .catch((e) =>
-                            console.error(
-                                "Error playing welcome-back sound:",
-                                e,
-                            ),
-                        );
+                        .then(() => {
+                            musicPlayer?.start();
+                        })
+                        .catch((e) => {
+                            console.error("Error playing welcome-back sound:", e);
+                            musicPlayer?.start();
+                        });
 
                     window.removeEventListener("click", tryPlayWelcomeBack);
                     window.removeEventListener("keydown", tryPlayWelcomeBack);
@@ -106,6 +109,8 @@
     }
 </script>
 
+<MusicPlayer bind:this={musicPlayer} />
+
 {#if overlayPhase !== "done"}
     <div class="loading-overlay">
         <div
@@ -130,7 +135,7 @@
 {/if}
 
 <main
-    class="min-h-screen p-8 md:p-16 flex flex-col items-center justify-center relative"
+    class="min-h-screen pt-12 p-8 md:p-16 md:pt-16 flex flex-col items-center justify-center relative"
 >
     <!-- Mainframe Container -->
 
