@@ -1,0 +1,2 @@
+# Generate a long random value before using authentication outside local development.
+BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters

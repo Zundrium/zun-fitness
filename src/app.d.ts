@@ -1,12 +1,36 @@
-// See https://svelte.dev/docs/kit/types#app.d.ts
-// for information about these interfaces
+/// <reference types="@cloudflare/workers-types" />
+
+import type { AppAuth, AuthSession, AuthUser } from '$lib/server/auth';
+import type { Database } from '$lib/server/db';
+
 declare global {
+	interface Env {
+		DB: D1Database;
+		ASSETS?: Fetcher;
+		APP_URL?: string;
+		BETTER_AUTH_URL?: string;
+		BETTER_AUTH_SECRET?: string;
+		BETTER_AUTH_TRUSTED_ORIGINS?: string;
+	}
+
 	namespace App {
-		// interface Error {}
-		// interface Locals {}
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
+		interface Platform {
+			env: Env;
+			ctx: ExecutionContext;
+			caches: CacheStorage;
+			cf?: IncomingRequestCfProperties;
+		}
+
+		interface Locals {
+			auth?: AppAuth;
+			db?: Database;
+			session: AuthSession;
+			user: AuthUser | null;
+		}
+
+		interface PageData {
+			user?: AuthUser | null;
+		}
 	}
 }
 

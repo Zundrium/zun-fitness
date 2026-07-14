@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784012493959,
+      "tag": "0000_normalized-workout-program",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1784017510808,
+      "tag": "0001_dated-workout-progress",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1784019423376,
+      "tag": "0002_typed-exercises",
+      "breakpoints": true
+    }
+  ]
+}

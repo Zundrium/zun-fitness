@@ -1,237 +1,129 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import Clock from "$lib/components/Clock.svelte";
-    import Calendar from "$lib/components/Calendar.svelte";
-    import WorkoutModal from "$lib/components/WorkoutModal.svelte";
-    import MusicPlayer from "$lib/components/MusicPlayer.svelte";
-    import workoutsData from "$lib/data/workouts.json";
-    import { audioService } from "$lib/services/audio";
+	import { untrack } from 'svelte';
+	import type { PageProps } from './$types';
 
-    let completedDays: string[] = [];
-    let selectedWorkout: any = null;
-    let selectedDateKey: string | null = null;
-    let isSelectedDayCompleted = false;
+	import Calendar from '$lib/components/Calendar.svelte';
+	import Clock from '$lib/components/Clock.svelte';
+	import WorkoutModal from '$lib/components/WorkoutModal.svelte';
+	import { Alert, AlertDescription } from '$lib/components/ui/alert';
+	import { audioService } from '$lib/services/audio';
+	import type { Workout } from '$lib/workouts/types';
 
-    let overlayPhase: "loading" | "split" | "done" = "loading";
-    let hasBoundWelcomeBackListener = false;
-    let musicPlayer: MusicPlayer | undefined;
+	let { data }: PageProps = $props();
+	let completedDateKeys = $state(
+		untrack(() => new Set<string>(data.completedDays.map((day) => day.dateKey)))
+	);
+	let savingDateKeys = $state(new Set<string>());
+	let selectedWorkout = $state<Workout | null>(null);
+	let selectedDateKey = $state<string | null>(null);
+	let exerciseSpeeds = $state(
+		untrack(
+			() =>
+				Object.fromEntries(
+					data.program.workouts.flatMap((workout) =>
+						workout.activities.flatMap((activity) =>
+							activity.type === 'reps'
+								? [[activity.exerciseId, activity.speedPercent] as const]
+								: []
+						)
+					)
+				) as Record<number, number>
+		)
+	);
+	let errorMessage = $state('');
 
-    const WELCOME_SOUND = "/audio/voice/heart/welcome-back.m4a";
+	const selectedWorkoutWithSpeeds = $derived<Workout | null>(
+		selectedWorkout
+			? {
+					...selectedWorkout,
+					activities: selectedWorkout.activities.map((activity) =>
+						activity.type === 'reps'
+							? {
+									...activity,
+									speedPercent:
+										exerciseSpeeds[activity.exerciseId] ?? activity.speedPercent
+								}
+							: activity
+					)
+				}
+			: null
+	);
+	const CLICK_SOUND = '/audio/click.m4a';
 
-    onMount(() => {
-        const stored = localStorage.getItem("completedDays");
-        if (stored) {
-            completedDays = JSON.parse(stored);
-        }
+	function handleDayClick({ day, dateKey }: { day: number; dateKey: string }) {
+		void audioService.play(CLICK_SOUND);
+		selectedWorkout = data.program.workouts.find((workout) => workout.day === day) ?? null;
+		selectedDateKey = selectedWorkout ? dateKey : null;
+	}
 
-        audioService.preload([WELCOME_SOUND]);
+	function closeWorkout() {
+		selectedWorkout = null;
+		selectedDateKey = null;
+	}
 
-        setTimeout(() => {
-            overlayPhase = "split";
-            if (!hasBoundWelcomeBackListener) {
-                const tryPlayWelcomeBack = () => {
-                    audioService
-                        .play(WELCOME_SOUND)
-                        .then(() => {
-                            musicPlayer?.start();
-                        })
-                        .catch((e) => {
-                            console.error("Error playing welcome-back sound:", e);
-                            musicPlayer?.start();
-                        });
+	function handleSpeedChange(exerciseId: number, speedPercent: number) {
+		exerciseSpeeds = { ...exerciseSpeeds, [exerciseId]: speedPercent };
+	}
 
-                    window.removeEventListener("click", tryPlayWelcomeBack);
-                    window.removeEventListener("keydown", tryPlayWelcomeBack);
-                };
+	async function toggleComplete(workoutId: number, dateKey: string) {
+		if (savingDateKeys.has(dateKey)) return;
+		errorMessage = '';
+		const wasCompleted = completedDateKeys.has(dateKey);
+		const nextCompleted = new Set(completedDateKeys);
+		if (wasCompleted) nextCompleted.delete(dateKey);
+		else nextCompleted.add(dateKey);
+		completedDateKeys = nextCompleted;
+		savingDateKeys = new Set(savingDateKeys).add(dateKey);
 
-                window.addEventListener("click", tryPlayWelcomeBack, {
-                    once: true,
-                });
-                window.addEventListener("keydown", tryPlayWelcomeBack, {
-                    once: true,
-                });
-                hasBoundWelcomeBackListener = true;
-            }
-            setTimeout(() => {
-                overlayPhase = "done";
-            }, 800);
-        }, 2000);
-    });
+		const response = await fetch(
+			wasCompleted
+				? `/api/progress/${workoutId}?date=${encodeURIComponent(dateKey)}`
+				: `/api/progress/${workoutId}`,
+			{
+				method: wasCompleted ? 'DELETE' : 'PUT',
+				headers: wasCompleted ? undefined : { 'content-type': 'application/json' },
+				body: wasCompleted ? undefined : JSON.stringify({ completedDate: dateKey })
+			}
+		);
+		const nextSaving = new Set(savingDateKeys);
+		nextSaving.delete(dateKey);
+		savingDateKeys = nextSaving;
 
-    function saveCompletedDays() {
-        localStorage.setItem("completedDays", JSON.stringify(completedDays));
-    }
-
-    function handleDayClick(detail: { day: number; dateKey: string }) {
-        const { day, dateKey } = detail;
-        selectedDateKey = dateKey;
-        isSelectedDayCompleted = completedDays.includes(dateKey);
-
-        if (day === 31) {
-            selectedWorkout = {
-                day: 31,
-                title: "SYSTEM RECHARGE",
-                description:
-                    "Protocol: Rest and Recovery. Allow systems to cool down.",
-                image_url:
-                    "https://images.unsplash.com/photo-1512438248247-f0f2a5a8b7f0?auto=format&fit=crop&w=800&q=80", // Placeholder for rest
-            };
-        } else {
-            // Find workout for the day. Data is 1-based index matching day number.
-            // workoutsData[0] is Day 1.
-            // So workoutsData[day - 1] should be correct.
-            // Let's verify bounds.
-            if (day >= 1 && day <= 30) {
-                selectedWorkout = workoutsData[day - 1];
-            } else {
-                // Fallback or error
-                selectedWorkout = null;
-            }
-        }
-    }
-
-    function closeModal() {
-        selectedWorkout = null;
-        selectedDateKey = null;
-    }
-
-    function toggleComplete() {
-        if (!selectedDateKey) return;
-
-        if (isSelectedDayCompleted) {
-            completedDays = completedDays.filter((d) => d !== selectedDateKey);
-            isSelectedDayCompleted = false;
-        } else {
-            completedDays = [...completedDays, selectedDateKey];
-            isSelectedDayCompleted = true;
-        }
-        saveCompletedDays();
-    }
+		if (!response.ok) {
+			const reverted = new Set(completedDateKeys);
+			if (wasCompleted) reverted.add(dateKey);
+			else reverted.delete(dateKey);
+			completedDateKeys = reverted;
+			errorMessage = 'Your progress could not be saved. Please try again.';
+		}
+	}
 </script>
 
-<MusicPlayer bind:this={musicPlayer} />
+<svelte:head><title>{data.program.name} · Zun Fitness</title></svelte:head>
 
-{#if overlayPhase !== "done"}
-    <div class="loading-overlay">
-        <div
-            class="loading-split loading-split--top {overlayPhase === 'split'
-                ? 'loading-split--animate-top'
-                : ''}"
-        ></div>
-        <div
-            class="loading-split loading-split--bottom {overlayPhase === 'split'
-                ? 'loading-split--animate-bottom'
-                : ''}"
-        ></div>
+<main class="mx-auto flex min-h-[calc(100vh-7rem)] max-w-2xl flex-col items-center justify-center px-4 py-10 sm:px-6">
+	<div class="w-full">
+		<Clock />
 
-        <div
-            class="loading-content {overlayPhase === 'split'
-                ? 'loading-content--fade'
-                : ''}"
-        >
-            <div class="loading-label">INITIALIZING.SYSTEMS</div>
-        </div>
-    </div>
-{/if}
+		<div class="mt-10 w-full">
+			<Calendar completedDateKeys={[...completedDateKeys]} ondayclick={handleDayClick} />
+		</div>
 
-<main
-    class="min-h-screen pt-12 p-8 md:p-16 md:pt-16 flex flex-col items-center justify-center relative"
->
-    <!-- Mainframe Container -->
-
-    <!-- Header Line -->
-    <div
-        class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent opacity-30"
-    ></div>
-
-    <div class="relative z-10">
-        <Clock />
-
-        <div class="calendar-wrapper mt-8">
-            <Calendar {completedDays} ondayclick={handleDayClick} />
-        </div>
-    </div>
-
-    <WorkoutModal
-        workout={selectedWorkout}
-        isCompleted={isSelectedDayCompleted}
-        onClose={closeModal}
-        onToggleComplete={toggleComplete}
-    />
-
-    <!-- Background Grid Animation (CSS only) -->
-    <div class="fixed inset-0 pointer-events-none z-[-1]">
-        <div
-            class="absolute inset-0 bg-[linear-gradient(rgba(0,243,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,243,255,0.05)_1px,transparent_1px)] bg-grid-main [transform:perspective(500px)_rotateX(60deg)_translateY(-100px)_scale(2)]"
-        ></div>
-    </div>
+		{#if errorMessage}
+			<Alert variant="destructive" class="mx-auto mt-4 max-w-sm">
+				<AlertDescription>{errorMessage}</AlertDescription>
+			</Alert>
+		{/if}
+	</div>
 </main>
 
-<style>
-    .calendar-wrapper {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    .loading-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        background: var(--color-bg);
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .loading-split {
-        position: absolute;
-        left: 0;
-        width: 100%;
-        background: #000;
-        transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-    }
-
-    .loading-split--top {
-        top: 0;
-        height: 50%;
-        transform: translateY(0);
-    }
-
-    .loading-split--bottom {
-        bottom: 0;
-        height: 50%;
-        transform: translateY(0);
-    }
-
-    .loading-split--animate-top {
-        transform: translateY(-100%);
-    }
-
-    .loading-split--animate-bottom {
-        transform: translateY(100%);
-    }
-
-    .loading-content {
-        position: relative;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-    }
-
-    .loading-content--fade {
-        opacity: 0;
-        transition: opacity 0.4s ease-out;
-    }
-
-    .loading-label {
-        font-family: var(--font-mono);
-        font-size: 0.7rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
-        color: var(--color-dim);
-    }
-</style>
+{#if selectedWorkoutWithSpeeds && selectedDateKey}
+	<WorkoutModal
+		workout={selectedWorkoutWithSpeeds}
+		completed={completedDateKeys.has(selectedDateKey)}
+		saving={savingDateKeys.has(selectedDateKey)}
+		onclose={closeWorkout}
+		ontoggle={() => toggleComplete(selectedWorkoutWithSpeeds!.id, selectedDateKey!)}
+		onspeedchange={handleSpeedChange}
+	/>
+{/if}
